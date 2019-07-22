@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:aop="http://www.springframework.org/schema/aop"
+           xmlns:mvc="http://www.springframework.org/schema/mvc"
+           xmlns:p="http://www.springframework.org/schema/p"
+           xmlns:context="http://www.springframework.org/schema/context"
+           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+    <!--处理静态资源-->
+    <mvc:default-servlet-handler/>
+    <!--  注解扫描-->
+    <context:annotation-config />
+    <context:component-scan base-package="org.accp.office.controller"></context:component-scan>
+
+    <!-- 配置注解的映射器和适配器 -->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json;charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- 上传文件 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf-8"/>
+        <!-- 最大内存大小 -->
+        <property name="maxInMemorySize" value="10240"/>
+        <!-- 最大文件大小，-1为不限制大小 -->
+        <property name="maxUploadSize" value="-1"/>
+    </bean>
+    <!--配置springmvc试图解析器  -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 前缀 -->
+        <property name="prefix" value="/WEB-INF/view/"></property>
+        <!-- 后缀 -->
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+
+    <mvc:interceptors>
+        <!--  使用bean定义一个Interceptor，直接定义在mvc:interceptors根下面的Interceptor将拦截所有的请求   -->
+        <!-- <bean class="com.bybo.aca.web.interceptor.Login"/> -->
+        <mvc:interceptor>
+            <!-- 拦截所有 -->
+            <mvc:mapping path="/**" />
+            <!-- 不拦截静态资源 -->
+            <mvc:exclude-mapping path="/**/*.css"/>
+            <mvc:exclude-mapping path="/**/*.js"/>
+            <mvc:exclude-mapping path="/**/*.*.js"/>
+            <mvc:exclude-mapping path="/**/*.png"/>
+            <mvc:exclude-mapping path="/**/*.gif"/>
+            <mvc:exclude-mapping path="/**/*.jpg"/>
+            <mvc:exclude-mapping path="/**/*.jpeg"/>
+
+            <!-- 不拦截主页 提示页面等     -->
+            <mvc:exclude-mapping path="/back" />
+            <mvc:exclude-mapping path="/log_in" />
+            <mvc:exclude-mapping path="/msg" />
+            <mvc:exclude-mapping path="/index" />
+            <mvc:exclude-mapping path="/login" />
+            <bean class="org.accp.office.interceptor.MyIntercepter" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!-- 不经过Servlet直接调整页面 可访问WEB-INF 但会经过拦截器 -->
+    <mvc:view-controller path="/msg" view-name="msg"></mvc:view-controller>
+    <mvc:view-controller path="/index" view-name="index"></mvc:view-controller>
+    <mvc:view-controller path="/login" view-name="login"></mvc:view-controller>
+    <mvc:view-controller path="/leave" view-name="leaverecord"></mvc:view-controller>
+    <mvc:view-controller path="/editleave" view-name="editleave"></mvc:view-controller>
+    <mvc:view-controller path="/add" view-name="addExpenditure"></mvc:view-controller>
+    <mvc:view-controller path="/expenditureShow" view-name="expenditureShow"></mvc:view-controller>
+    <mvc:view-controller path="/chartbymonth" view-name="chartbymonth"></mvc:view-controller>
+</beans>

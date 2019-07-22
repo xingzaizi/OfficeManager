@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.accp.office.dao.ChartMapper">
+
+    <!-- List<ExpenditureVoDepartment> listExpenditureVoDepartment(Integer depId,Integer year,Integer startMonth,Integer endMonth);//查询整个公司的部门报销情况 -->
+    <select id="listExpenditureVoDepartment" resultMap="exVoDepMap">
+       SELECT SUM(total_money) total_money,YEAR(create_date) AS `year`,MONTH(create_date) AS `month`,dep.department_id FROM expenditure
+        INNER JOIN employee AS emp
+        ON emp.employee_id=create_by
+        INNER JOIN department AS dep
+        ON dep.department_id=emp.dep_Id
+        <where>
+            expenditure.`approval_state_id`=5
+            <if test="depId!=null">
+                and emp.dep_Id = #{depId}
+            </if>
+            <if test="year!=null">
+                and YEAR(create_date) = #{year}
+            </if>
+            <if test="startMonth!=null">
+                and MONTH(create_date) &gt;= #{startMonth}
+            </if>
+            <if test="endMonth!=null">
+                and MONTH(create_date) &lt;= #{endMonth}
+            </if>
+        </where>
+        GROUP BY MONTH(create_date)
+    </select>
+
+    <resultMap id="exVoDepMap" type="org.accp.office.vo.ExpenditureVoDepartment">
+        <result column="total_money" property="totalMoney"></result>
+        <result column="year" property="year"></result>
+        <result column="month" property="month"></result>
+        <association property="department" column="department_id" select="org.accp.office.dao.DepartmentMapper.selectByDepId"></association>
+    </resultMap>
+
+
+    <!-- List<ExpenditureVoEmployee> listExpenditureVoEmployee(Integer depId,Integer year,Integer startMonth,Integer endMonth);//查询整个部门的员工报销情况 -->
+    <select id="listExpenditureVoEmployee" resultMap="exVoEmpMap">
+        SELECT SUM(total_money) total_money,YEAR(create_date) AS `year`,MONTH(create_date) AS `month`,dep.department_id,emp.`employee_name` FROM expenditure
+        INNER JOIN employee AS emp
+        ON emp.employee_id=create_by
+        INNER JOIN department AS dep
+        ON dep.department_id=emp.dep_Id
+        <where>
+            expenditure.`approval_state_id`=5
+            <if test="depId!=null">
+                and emp.dep_Id = #{depId}
+            </if>
+            <if test="year!=null">
+                and YEAR(create_date) = #{year}
+            </if>
+            <if test="startMonth!=null">
+                and MONTH(create_date) &gt;= #{startMonth}
+            </if>
+            <if test="endMonth!=null">
+                and MONTH(create_date) &lt;= #{endMonth}
+            </if>
+        </where>
+        GROUP BY MONTH(create_date),emp.`employee_name`
+    </select>
+
+    <resultMap id="exVoEmpMap" type="org.accp.office.vo.ExpenditureVoEmployee">
+        <result column="total_money" property="totalMoney"></result>
+        <result column="year" property="year"></result>
+        <result column="month" property="month"></result>
+        <result column="employee_name" property="empName"></result>
+        <association property="department" column="department_id" select="org.accp.office.dao.DepartmentMapper.selectByDepId"></association>
+    </resultMap>
+
+
+
+    <resultMap id="byYearMap" type="org.accp.office.vo.ExpenditureVoDepartment">
+        <result column="total_money" property="totalMoney"></result>
+        <result column="year" property="year"></result>
+        <association property="department" column="department_id" select="org.accp.office.dao.DepartmentMapper.selectByDepId"></association>
+    </resultMap>
+
+   <!-- List<ExpenditureVoDepartment> listExpenditureVoDepartmentByYear(@Param("depId") Integer depId,@Param("startYear")Integer startYear,@Param("endYear")Integer endYear);//分组年份查询部门报销情况 如果总经理则查询全部-->
+    <select id="listExpenditureVoDepartmentByYear" resultMap="byYearMap">
+        SELECT SUM(total_money) total_money,YEAR(create_date) AS `year` FROM expenditure
+        INNER JOIN employee AS emp
+        ON emp.employee_id=create_by
+        INNER JOIN department AS dep
+        ON dep.department_id=emp.dep_Id
+        <where>
+            expenditure.`approval_state_id`=5
+            <if test="depId!=null">
+                and emp.dep_Id = #{depId}
+            </if>
+            <if test="startYear!=null">
+                and YEAR(create_date) &gt;= #{startYear}
+            </if>
+            <if test="endYear!=null">
+                and YEAR(create_date) &lt;= #{endYear}
+            </if>
+        </where>
+       GROUP BY YEAR(create_date)
+    </select>
+
+    <resultMap id="detailMap" type="org.accp.office.vo.ExpenditureVoDepartment">
+        <result column="total_money" property="totalMoney"></result>
+        <result column="year" property="year"></result>
+        <result column="month" property="month"></result>
+        <association property="department" column="department_id" select="org.accp.office.dao.DepartmentMapper.selectByDepId"></association>
+    </resultMap>
+    <!-- 查询所有部门的年度报销 -->
+    <select id="selectAllDepByYear" resultMap="detailMap">
+        SELECT SUM(total_money) total_money,YEAR(create_date) AS `year`,MONTH(create_date) AS `month`,dep.department_id FROM expenditure
+        INNER JOIN employee AS emp
+        ON emp.employee_id=create_by
+        INNER JOIN department AS dep
+        ON dep.department_id=emp.dep_Id
+        <where>
+            expenditure.`approval_state_id`=5
+            <if test="depId!=null">
+                and emp.dep_Id = #{depId}
+            </if>
+            <if test="startYear!=null">
+                and YEAR(create_date) &gt;= #{startYear}
+            </if>
+            <if test="endYear!=null">
+                and YEAR(create_date) &lt;= #{endYear}
+            </if>
+        </where>
+       GROUP BY dep.`department_id`
+    </select>
+
+    <!-- 查询所有部门的年度报销 -->
+    <select id="selectAllDepByMonth" resultMap="detailMap">
+        SELECT SUM(total_money) total_money,YEAR(create_date) AS `year`,MONTH(create_date) AS `month`,dep.department_id FROM expenditure
+        INNER JOIN employee AS emp
+        ON emp.employee_id=create_by
+        INNER JOIN department AS dep
+        ON dep.department_id=emp.dep_Id
+        <where>
+            expenditure.`approval_state_id`=5
+            <if test="depId!=null">
+                and emp.dep_Id = #{depId}
+            </if>
+            <if test="year!=null">
+                and YEAR(create_date) = #{year}
+            </if>
+            <if test="startMonth!=null">
+                and MONTH(create_date) &gt;= #{startMonth}
+            </if>
+            <if test="endMonth!=null">
+                and MONTH(create_date) &lt;= #{endMonth}
+            </if>
+        </where>
+        GROUP BY dep.`department_id`
+    </select>
+</mapper>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.accp.office.dao.ReviewRecordMapper">
+  <resultMap id="BaseResultMap" type="org.accp.office.pojo.ReviewRecord">
+    <result column="review_id" jdbcType="INTEGER" property="reviewId" />
+    <result column="review_date" jdbcType="DATE" property="reviewDate" />
+    <result column="review_idea" jdbcType="VARCHAR" property="reviewIdea" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="emp_id" jdbcType="INTEGER" property="empId" />
+    <result column="review_state_id" jdbcType="INTEGER" property="reviewStateId" />
+    <association property="employee" column="emp_id" select="org.accp.office.dao.EmployeeMapper.selectByPrimaryKey"></association>
+    <association property="reviewState" column="review_state_id" select="org.accp.office.dao.ReviewStateMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    review_id, review_date, review_idea, order_id, emp_id, review_state_id
+  </sql>
+  <select id="selectByExample" parameterType="org.accp.office.pojo.ReviewRecordExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from reviewrecord
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="org.accp.office.pojo.ReviewRecordExample">
+    delete from reviewrecord
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="org.accp.office.pojo.ReviewRecord">
+    insert into reviewrecord (review_id, review_date, review_idea, 
+      order_id, emp_id, review_state_id
+      )
+    values (#{reviewId,jdbcType=INTEGER}, #{reviewDate,jdbcType=DATE}, #{reviewIdea,jdbcType=VARCHAR},
+      #{orderId,jdbcType=VARCHAR}, #{empId,jdbcType=INTEGER}, #{reviewStateId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="org.accp.office.pojo.ReviewRecord">
+    insert into reviewrecord
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="reviewId != null">
+        review_id,
+      </if>
+      <if test="reviewDate != null">
+        review_date,
+      </if>
+      <if test="reviewIdea != null">
+        review_idea,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="empId != null">
+        emp_id,
+      </if>
+      <if test="reviewStateId != null">
+        review_state_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="reviewId != null">
+        #{reviewId,jdbcType=INTEGER},
+      </if>
+      <if test="reviewDate != null">
+        #{reviewDate,jdbcType=DATE},
+      </if>
+      <if test="reviewIdea != null">
+        #{reviewIdea,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null">
+        #{empId,jdbcType=INTEGER},
+      </if>
+      <if test="reviewStateId != null">
+        #{reviewStateId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="org.accp.office.pojo.ReviewRecordExample" resultType="java.lang.Long">
+    select count(*) from reviewrecord
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update reviewrecord
+    <set>
+      <if test="record.reviewId != null">
+        review_id = #{record.reviewId,jdbcType=INTEGER},
+      </if>
+      <if test="record.reviewDate != null">
+        review_date = #{record.reviewDate,jdbcType=DATE},
+      </if>
+      <if test="record.reviewIdea != null">
+        review_idea = #{record.reviewIdea,jdbcType=VARCHAR},
+      </if>
+      <if test="record.orderId != null">
+        order_id = #{record.orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.empId != null">
+        emp_id = #{record.empId,jdbcType=INTEGER},
+      </if>
+      <if test="record.reviewStateId != null">
+        review_state_id = #{record.reviewStateId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update reviewrecord
+    set review_id = #{record.reviewId,jdbcType=INTEGER},
+      review_date = #{record.reviewDate,jdbcType=DATE},
+      review_idea = #{record.reviewIdea,jdbcType=VARCHAR},
+      order_id = #{record.orderId,jdbcType=VARCHAR},
+      emp_id = #{record.empId,jdbcType=INTEGER},
+      review_state_id = #{record.reviewStateId,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+
+  <select id="selectByOrderId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from reviewrecord
+    where order_id = #{order_Id,jdbcType=INTEGER}
+  </select>
+</mapper>

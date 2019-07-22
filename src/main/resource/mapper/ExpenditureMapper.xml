@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.accp.office.dao.ExpenditureMapper">
+  <resultMap id="BaseResultMap" type="org.accp.office.pojo.Expenditure">
+    <result column="expenditure_id" jdbcType="VARCHAR" property="expenditureId" />
+    <result column="total_money" jdbcType="REAL" property="totalMoney" />
+    <result column="create_date" jdbcType="DATE" property="createDate" />
+    <result column="create_by" jdbcType="INTEGER" property="createBy" />
+    <result column="dispose_by" jdbcType="INTEGER" property="disposeBy" />
+    <result column="approval_state_id" jdbcType="INTEGER" property="approvalStateId" />
+    <result column="reason" property="reason"></result>
+    <association property="createEmp" column="create_by" select="org.accp.office.dao.EmployeeMapper.selectByPrimaryKey"></association>
+    <association property="disposeEmp" column="dispose_by" select="org.accp.office.dao.EmployeeMapper.selectByPrimaryKey"></association>
+    <association property="approvalState" column="approval_state_id" select="org.accp.office.dao.ApprovalStateMapper.selectByPrimaryKey"></association>
+    <collection property="reviewRecords" column="expenditure_id" select="org.accp.office.dao.ReviewRecordMapper.selectByOrderId"></collection>
+    <collection property="expenditureDetails" column="expenditure_id" select="org.accp.office.dao.ExpenditureDetailMapper.selectByExpenditureId"></collection>
+  </resultMap>
+  <resultMap id="myExpenditure" type="org.accp.office.pojo.Expenditure">
+    <result column="expenditure_id" jdbcType="VARCHAR" property="expenditureId" />
+    <result column="total_money" jdbcType="REAL" property="totalMoney" />
+    <result column="create_date" jdbcType="DATE" property="createDate" />
+    <result column="create_by" jdbcType="INTEGER" property="createBy" />
+    <result column="dispose_by" jdbcType="INTEGER" property="disposeBy" />
+    <result column="approval_state_id" jdbcType="INTEGER" property="approvalStateId" />
+    <result column="reason" property="reason"></result>
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    expenditure_id, total_money, create_date, create_by, dispose_by, approval_state_id,reason
+  </sql>
+  <select id="selectByExample" parameterType="org.accp.office.pojo.ExpenditureExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from expenditure
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="org.accp.office.pojo.ExpenditureExample">
+    delete from expenditure
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="org.accp.office.pojo.Expenditure">
+    insert into expenditure (expenditure_id, total_money, create_date, 
+      create_by, dispose_by, approval_state_id,reason
+      )
+    values (#{expenditureId,jdbcType=VARCHAR}, #{totalMoney,jdbcType=REAL}, #{createDate,jdbcType=DATE}, 
+      #{createBy,jdbcType=INTEGER}, #{disposeBy,jdbcType=INTEGER}, #{approvalStateId,jdbcType=INTEGER},
+      #{reason,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="org.accp.office.pojo.Expenditure">
+    insert into expenditure
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="expenditureId != null">
+        expenditure_id,
+      </if>
+      <if test="totalMoney != null">
+        total_money,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="disposeBy != null">
+        dispose_by,
+      </if>
+      <if test="approvalStateId != null">
+        approval_state_id,
+      </if>
+      <if test="reason != null">
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="expenditureId != null">
+        #{expenditureId,jdbcType=VARCHAR},
+      </if>
+      <if test="totalMoney != null">
+        #{totalMoney,jdbcType=REAL},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=DATE},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=INTEGER},
+      </if>
+      <if test="disposeBy != null">
+        #{disposeBy,jdbcType=INTEGER},
+      </if>
+      <if test="approvalStateId != null">
+        #{approvalStateId,jdbcType=INTEGER},
+      </if>
+      <if test="reason != null">
+        #{reason,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="org.accp.office.pojo.ExpenditureExample" resultType="java.lang.Long">
+    select count(*) from expenditure
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update expenditure
+    <set>
+      <if test="record.expenditureId != null">
+        expenditure_id = #{record.expenditureId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.totalMoney != null">
+        total_money = #{record.totalMoney,jdbcType=REAL},
+      </if>
+      <if test="record.createDate != null">
+        create_date = #{record.createDate,jdbcType=DATE},
+      </if>
+      <if test="record.createBy != null">
+        create_by = #{record.createBy,jdbcType=INTEGER},
+      </if>
+      <if test="record.disposeBy != null">
+        dispose_by = #{record.disposeBy,jdbcType=INTEGER},
+      </if>
+      <if test="record.approvalStateId != null">
+        approval_state_id = #{record.approvalStateId,jdbcType=INTEGER},
+      </if>
+      <if test="record.reason!=null">
+        reason = #{record.reason,jdbcType=VARCHAR}
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update expenditure
+    set expenditure_id = #{record.expenditureId,jdbcType=VARCHAR},
+      total_money = #{record.totalMoney,jdbcType=REAL},
+      create_date = #{record.createDate,jdbcType=DATE},
+      create_by = #{record.createBy,jdbcType=INTEGER},
+      dispose_by = #{record.disposeBy,jdbcType=INTEGER},
+      approval_state_id = #{record.approvalStateId,jdbcType=INTEGER},
+      reason = #{record.reason}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+
+
+  <select id="getExpenditureByExpenditureId" parameterType="java.lang.String" resultMap="myExpenditure">
+    select
+    <include refid="Base_Column_List" />
+    from expenditure
+    where expenditure_id = #{expenditureId,jdbcType=VARCHAR}
+  </select>
+
+</mapper>
