@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:spring.xml")
 public class testMyOffice {
+    //测试github
     @Autowired
     ApprovalStateMapper approvalStateMapper;
     @Autowired
@@ -83,7 +84,5 @@ public class testMyOffice {
         for (ExpenditureVoEmployee expenditureVoDepartment : chartMapper.listExpenditureVoEmployee(null, null, null, null)) {
             System.out.println(expenditureVoDepartment);
         }
-
-
     }
 }
